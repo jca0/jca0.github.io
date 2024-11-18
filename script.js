@@ -29,7 +29,7 @@ document.addEventListener('mousemove', (event) => {
     idleTimer = setTimeout(() => {
         isMoving = false;
         quack();
-    }, 500); // 1 second of inactivity triggers the quack
+    }, 10); // 1 second of inactivity triggers the quack
 });
 
 // Function to move the duckling towards the cursor
@@ -41,8 +41,8 @@ function moveDuckling() {
 
     // Move the duckling if it's far enough from the cursor
     if (distance > 1) {
-        duckX += dx * 0.05; // Adjust the 0.05 value to change speed
-        duckY += dy * 0.05;
+        duckX += dx * 0.5; // Adjust the 0.05 value to change speed
+        duckY += dy * 0.5;
 
         // Update duckling position
         duckling.style.left = duckX + 'px';
