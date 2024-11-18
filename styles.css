@@ -1,0 +1,24 @@
+body {
+    cursor: url('breadcrumb.png'), auto; /* Custom breadcrumb cursor */
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* Hide scrollbars */
+    background-color: #f0f8ff; /* Light blue background */
+}
+
+#duckling {
+    position: absolute;
+    font-size: 16px;
+    line-height: 16px;
+    transform: translate(-50%, -50%); /* Center the duckling */
+}
+
+.trail-dot {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background-color: brown;
+    border-radius: 50%;
+    opacity: 0.8;
+}
+
