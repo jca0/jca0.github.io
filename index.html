@@ -35,20 +35,20 @@
         .wave {
             position: absolute;
             width: 200%;
-            height: 20px;
+            height: 30px;
             background: rgba(255, 255, 255, 0.2);
-            animation: wave 3s linear infinite;
+            animation: wave 1.5s linear infinite;
         }
 
         .wave:nth-child(2) {
             top: 15px;
-            animation-delay: -1.5s;
+            animation-delay: -.75s;
             opacity: 0.5;
         }
 
         .wave:nth-child(3) {
             top: 30px;
-            animation-delay: -2s;
+            animation-delay: -1s;
             opacity: 0.3;
         }
 
@@ -56,11 +56,17 @@
             0% {
                 transform: translateX(0) scaleY(1);
             }
+            25% {
+                transform: translateX(-25%) scaleY(1.5); /* Increased movement and height */
+            }
             50% {
-                transform: translateX(-25%) scaleY(1.2);
+                transform: translateX(-50%) scaleY(2); /* Max height and movement */
+            }
+            75% {
+                transform: translateX(-75%) scaleY(1.5);
             }
             100% {
-                transform: translateX(-50%) scaleY(1);
+                transform: translateX(-100%) scaleY(1);
             }
         }
 
@@ -163,13 +169,13 @@
         const duckRightOpen = `
            __
         __( o)<
-      \\ <._) 
+      \\ <_. ) 
        '---'`;
 
         const duckRightClosed = `
            __
         __( o)-
-      \\ <._) 
+      \\ <_. ) 
        '---'`;
 
         let duckFramesLeft = [duckLeftOpen, duckLeftClosed];
