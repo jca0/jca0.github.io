@@ -5,62 +5,91 @@
     <title>ASCII Duck</title>
     <style>
         body {
-            cursor: url('bread.png'), auto;
+            /* Using a custom cursor shape since we can't load an image */
+            cursor: none;
             margin: 0;
             overflow: hidden;
+            background: #f0f0f0;
         }
 
         #duck {
             position: absolute;
-            bottom: 10px; /* Adjust this value to align the duck properly */
+            bottom: 10px;
             left: 0;
-            font-size: 16px; /* Adjust font size as needed */
+            font-size: 16px;
             line-height: 1;
             font-family: monospace;
             white-space: pre;
             user-select: none;
+            transform-origin: center;
+        }
+
+        #cursor {
+            position: fixed;
+            pointer-events: none;
+            font-size: 24px;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
         }
     </style>
 </head>
 <body>
     <div id="duck"></div>
+    <div id="cursor">🥖</div>
     <audio id="quack-sound" src="quack.mp3" preload="auto"></audio>
 
     <script>
         const duck = document.getElementById('duck');
+        const cursor = document.getElementById('cursor');
         const quackSound = document.getElementById('quack-sound');
 
-        const duckOpen = `
+        // Duck ASCII art - one facing left, one facing right
+        const duckLeftOpen = `
             __
           >(o )__
            ( ._> /
             \`---'`;
 
-        const duckClosed = `
+        const duckLeftClosed = `
             __
           -(o )__
            ( ._> /
             \`---'`;
 
-        let duckFrames = [duckOpen, duckClosed];
+        const duckRightOpen = `
+           __
+        __(o <
+      \\ <._) 
+       '---'`;
+
+        const duckRightClosed = `
+           __
+        __(o -
+      \\ <._) 
+       '---'`;
+
+        let duckFramesLeft = [duckLeftOpen, duckLeftClosed];
+        let duckFramesRight = [duckRightOpen, duckRightClosed];
         let currentFrame = 0;
+        let facingRight = false;
 
         let duckX = 0;
         let cursorX = 0;
+        let cursorY = 0;
         let isQuacking = false;
 
-        let frameDelay = 10; // Adjust this value to control mouth animation speed
+        let frameDelay = 10;
         let frameCounter = 0;
 
         function animateDuck() {
-            // Increment the frame counter
             frameCounter++;
 
             // Change the duck's frame when the frame counter reaches the frame delay
             if (frameCounter >= frameDelay) {
-                currentFrame = (currentFrame + 1) % duckFrames.length;
-                duck.textContent = duckFrames[currentFrame];
-                frameCounter = 0; // Reset the frame counter
+                currentFrame = (currentFrame + 1) % 2;
+                const frames = facingRight ? duckFramesRight : duckFramesLeft;
+                duck.textContent = frames[currentFrame];
+                frameCounter = 0;
             }
 
             // Adjust for the duck's width to center it on the cursor
@@ -68,26 +97,37 @@
             let dx = cursorX - (duckX + duckWidth / 2);
             let speed = 2;
 
+            // Update duck direction based on movement
+            if (dx > 0 && !facingRight) {
+                facingRight = true;
+            } else if (dx < 0 && facingRight) {
+                facingRight = false;
+            }
+
             if (Math.abs(dx) > speed) {
                 duckX += speed * Math.sign(dx);
                 isQuacking = false;
             } else {
                 duckX += dx;
                 if (!isQuacking) {
-                    quackSound.play();
+                    quackSound.play().catch(e => console.log('Audio play failed:', e));
                     isQuacking = true;
                 }
             }
 
             duck.style.left = duckX + 'px';
 
-            // Continue the animation
+            // Update custom cursor position
+            cursor.style.left = cursorX + 'px';
+            cursor.style.top = cursorY + 'px';
+
             requestAnimationFrame(animateDuck);
         }
 
-        // Update cursorX whenever the mouse moves
+        // Update cursor position whenever the mouse moves
         document.addEventListener('mousemove', function(e) {
             cursorX = e.clientX;
+            cursorY = e.clientY;
         });
 
         // Start the duck animation
