@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Chat Interface</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="chat-container">
+    <div class="header">
+      <h1>AI Chat Interface</h1>
+      <div class="model-switcher">
+        <label for="ai-model">Choose AI:</label>
+        <select id="ai-model">
+          <option value="chatgpt">ChatGPT</option>
+          <option value="claude">Claude</option>
+        </select>
+      </div>
+    </div>
+    <div class="chat-window" id="chat-window">
+      <!-- Messages will appear here -->
+    </div>
+    <div class="input-area">
+      <input type="text" id="user-input" placeholder="Type your message...">
+      <button id="send-button">Send</button>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
