@@ -2,19 +2,71 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>ASCII Duck</title>
+    <title>quack</title>
     <style>
         body {
-            /* Using a custom cursor shape since we can't load an image */
-            cursor: none;
+            cursor: url('bread.png'), auto;  /* Changed to use your bread.png */
             margin: 0;
             overflow: hidden;
-            background: #f0f0f0;
+            height: 100vh;
+            background: linear-gradient(to bottom, #87CEEB, #4BB4DE);
+        }
+
+        .sun {
+            position: absolute;
+            top: 40px;
+            right: 80px;
+            width: 80px;
+            height: 80px;
+            background: #FFD700;
+            border-radius: 50%;
+            box-shadow: 0 0 50px #FFD700;
+        }
+
+        .water {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 40%;
+            background: linear-gradient(to bottom, #4BB4DE, #1E90FF);
+            overflow: hidden;
+        }
+
+        .wave {
+            position: absolute;
+            width: 200%;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            animation: wave 3s linear infinite;
+        }
+
+        .wave:nth-child(2) {
+            top: 15px;
+            animation-delay: -1.5s;
+            opacity: 0.5;
+        }
+
+        .wave:nth-child(3) {
+            top: 30px;
+            animation-delay: -2s;
+            opacity: 0.3;
+        }
+
+        @keyframes wave {
+            0% {
+                transform: translateX(0) scaleY(1);
+            }
+            50% {
+                transform: translateX(-25%) scaleY(1.2);
+            }
+            100% {
+                transform: translateX(-50%) scaleY(1);
+            }
         }
 
         #duck {
             position: absolute;
-            bottom: 10px;
+            bottom: 25%;
             left: 0;
             font-size: 16px;
             line-height: 1;
@@ -22,28 +74,80 @@
             white-space: pre;
             user-select: none;
             transform-origin: center;
+            color: #000;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+            z-index: 10;
         }
 
-        #cursor {
-            position: fixed;
-            pointer-events: none;
-            font-size: 24px;
-            transform: translate(-50%, -50%);
-            z-index: 9999;
+        /* Add some clouds */
+        .cloud {
+            position: absolute;
+            background: white;
+            border-radius: 20px;
+            opacity: 0.8;
+            animation: float 20s linear infinite;
+        }
+
+        .cloud:nth-child(1) {
+            top: 15%;
+            left: 20%;
+            width: 100px;
+            height: 30px;
+            animation-delay: -2s;
+        }
+
+        .cloud:nth-child(2) {
+            top: 10%;
+            left: 60%;
+            width: 140px;
+            height: 40px;
+            animation-delay: -7s;
+        }
+
+        @keyframes float {
+            from {
+                transform: translateX(-200px);
+            }
+            to {
+                transform: translateX(calc(100vw + 200px));
+            }
+        }
+
+        /* Duck reflection */
+        #duck-reflection {
+            position: absolute;
+            bottom: 10%;
+            left: 0;
+            font-size: 16px;
+            line-height: 1;
+            font-family: monospace;
+            white-space: pre;
+            user-select: none;
+            transform: scaleY(-0.4) translateY(100%);
+            opacity: 0.3;
+            color: #000;
+            z-index: 5;
         }
     </style>
 </head>
 <body>
+    <div class="sun"></div>
+    <div class="cloud"></div>
+    <div class="cloud"></div>
+    <div class="water">
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+    </div>
     <div id="duck"></div>
-    <div id="cursor">🥖</div>
+    <div id="duck-reflection"></div>
     <audio id="quack-sound" src="quack.mp3" preload="auto"></audio>
 
     <script>
         const duck = document.getElementById('duck');
-        const cursor = document.getElementById('cursor');
+        const duckReflection = document.getElementById('duck-reflection');
         const quackSound = document.getElementById('quack-sound');
 
-        // Duck ASCII art - one facing left, one facing right
         const duckLeftOpen = `
             __
           >(o )__
@@ -58,13 +162,13 @@
 
         const duckRightOpen = `
            __
-        __(o <
+        __(o )<
       \\ <._) 
        '---'`;
 
         const duckRightClosed = `
            __
-        __(o -
+        __(o )-
       \\ <._) 
        '---'`;
 
@@ -75,29 +179,37 @@
 
         let duckX = 0;
         let cursorX = 0;
-        let cursorY = 0;
         let isQuacking = false;
 
         let frameDelay = 10;
         let frameCounter = 0;
 
+        // Add bobbing motion variables
+        let bobOffset = 0;
+        let bobSpeed = 0.02;
+
         function animateDuck() {
             frameCounter++;
 
-            // Change the duck's frame when the frame counter reaches the frame delay
+            // Add bobbing motion
+            bobOffset = Math.sin(Date.now() * bobSpeed) * 5;
+            duck.style.transform = `translateY(${bobOffset}px)`;
+            // Update reflection bobbing (inverse of duck bobbing)
+            duckReflection.style.transform = `scaleY(-0.4) translateY(100%) translateY(${-bobOffset * 0.4}px)`;
+
             if (frameCounter >= frameDelay) {
                 currentFrame = (currentFrame + 1) % 2;
                 const frames = facingRight ? duckFramesRight : duckFramesLeft;
-                duck.textContent = frames[currentFrame];
+                const currentDuckFrame = frames[currentFrame];
+                duck.textContent = currentDuckFrame;
+                duckReflection.textContent = currentDuckFrame;
                 frameCounter = 0;
             }
 
-            // Adjust for the duck's width to center it on the cursor
             let duckWidth = duck.offsetWidth;
             let dx = cursorX - (duckX + duckWidth / 2);
             let speed = 2;
 
-            // Update duck direction based on movement
             if (dx > 0 && !facingRight) {
                 facingRight = true;
             } else if (dx < 0 && facingRight) {
@@ -116,21 +228,15 @@
             }
 
             duck.style.left = duckX + 'px';
-
-            // Update custom cursor position
-            cursor.style.left = cursorX + 'px';
-            cursor.style.top = cursorY + 'px';
+            duckReflection.style.left = duckX + 'px';
 
             requestAnimationFrame(animateDuck);
         }
 
-        // Update cursor position whenever the mouse moves
         document.addEventListener('mousemove', function(e) {
             cursorX = e.clientX;
-            cursorY = e.clientY;
         });
 
-        // Start the duck animation
         animateDuck();
     </script>
 </body>
