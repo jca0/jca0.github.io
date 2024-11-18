@@ -1,8 +1,6 @@
-const breadcrumb = document.getElementById('breadcrumb');
 const duck = document.getElementById('duck');
 const quackSound = document.getElementById('quack-sound');
 
-// ASCII art for the duck
 const duckOpen = `
     __
   >(o )__
@@ -15,45 +13,42 @@ const duckClosed = `
    ( ._> /
     \`---'`;
 
-// Set the initial duck ASCII art
-duck.textContent = duckOpen;
+let duckFrames = [duckOpen, duckClosed];
+let currentFrame = 0;
 
-// Update breadcrumb position on mouse move
-document.addEventListener('mousemove', (event) => {
-  const mouseX = event.clientX;
-  const mouseY = event.clientY;
+let duckX = 0;
+let cursorX = 0;
+let isQuacking = false;
 
-  // Move the breadcrumb
-  breadcrumb.style.left = `${mouseX}px`;
-  breadcrumb.style.top = `${mouseY}px`;
+function animateDuck() {
+    currentFrame = (currentFrame + 1) % duckFrames.length;
+    duck.textContent = duckFrames[currentFrame];
+
+    // Adjust for the duck's width to center it on the cursor
+    let duckWidth = duck.offsetWidth;
+    let dx = cursorX - (duckX + duckWidth / 2);
+    let speed = 2;
+
+    if (Math.abs(dx) > speed) {
+        duckX += speed * Math.sign(dx);
+        isQuacking = false;
+    } else {
+        duckX += dx;
+        if (!isQuacking) {
+            quackSound.play();
+            isQuacking = true;
+        }
+    }
+
+    duck.style.left = duckX + 'px';
+
+    requestAnimationFrame(animateDuck);
+}
+
+// Update cursorX whenever the mouse moves
+document.addEventListener('mousemove', function(e) {
+    cursorX = e.clientX;
 });
 
-// Make the duck follow the breadcrumb
-let duckX = 0; // Initial duck position
-const duckSpeed = 5; // Speed of the duck movement
-
-function moveDuck() {
-  const breadcrumbX = parseFloat(breadcrumb.style.left || 0);
-
-  // Move the duck horizontally towards the breadcrumb
-  if (duckX < breadcrumbX) {
-    duckX = Math.min(duckX + duckSpeed, breadcrumbX);
-    duck.style.transform = 'scaleX(1)'; // Face right
-  } else if (duckX > breadcrumbX) {
-    duckX = Math.max(duckX - duckSpeed, breadcrumbX);
-    duck.style.transform = 'scaleX(-1)'; // Face left
-  }
-
-  duck.style.left = `${duckX}px`;
-
-  // Toggle between open and closed mouth
-  duck.textContent = duck.textContent === duckOpen ? duckClosed : duckOpen;
-
-  // Play quack sound randomly as the duck moves
-  if (Math.random() < 0.05) { // Adjust probability to control frequency
-    quackSound.currentTime = 0;
-    quackSound.play();
-  }
-
-  requestAnimationFrame(moveDuck);
-}
+// Start the duck animation
+animateDuck();
