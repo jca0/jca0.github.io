@@ -29,7 +29,7 @@ document.addEventListener('mousemove', (event) => {
     idleTimer = setTimeout(() => {
         isMoving = false;
         quack();
-    }, 1000); // 1 second of inactivity triggers the quack
+    }, 500); // 1 second of inactivity triggers the quack
 });
 
 // Function to move the duckling towards the cursor
