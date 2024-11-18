@@ -2,17 +2,17 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>quack</title>
+    <title>ASCII Duck</title>
     <style>
         body {
-            cursor: url('bread.webp'), auto;
+            cursor: url('bread.png'), auto;
             margin: 0;
             overflow: hidden;
         }
 
         #duck {
             position: absolute;
-            bottom: -20px; /* Adjust this value to align the duck properly */
+            bottom: 10px; /* Adjust this value to align the duck properly */
             left: 0;
             font-size: 16px; /* Adjust font size as needed */
             line-height: 1;
@@ -31,16 +31,16 @@
         const quackSound = document.getElementById('quack-sound');
 
         const duckOpen = `
-    __
-  >(o )__
-   ( ._> /
-    \`---'`;
+            __
+          >(o )__
+           ( ._> /
+            \`---'`;
 
         const duckClosed = `
-    __
-  -(o )__
-   ( ._> /
-    \`---'`;
+            __
+          -(o )__
+           ( ._> /
+            \`---'`;
 
         let duckFrames = [duckOpen, duckClosed];
         let currentFrame = 0;
@@ -49,10 +49,21 @@
         let cursorX = 0;
         let isQuacking = false;
 
-        function animateDuck() {
-            currentFrame = (currentFrame + 1) % duckFrames.length;
-            duck.textContent = duckFrames[currentFrame];
+        let frameDelay = 10; // Adjust this value to control mouth animation speed
+        let frameCounter = 0;
 
+        function animateDuck() {
+            // Increment the frame counter
+            frameCounter++;
+
+            // Change the duck's frame when the frame counter reaches the frame delay
+            if (frameCounter >= frameDelay) {
+                currentFrame = (currentFrame + 1) % duckFrames.length;
+                duck.textContent = duckFrames[currentFrame];
+                frameCounter = 0; // Reset the frame counter
+            }
+
+            // Adjust for the duck's width to center it on the cursor
             let duckWidth = duck.offsetWidth;
             let dx = cursorX - (duckX + duckWidth / 2);
             let speed = 2;
@@ -70,13 +81,16 @@
 
             duck.style.left = duckX + 'px';
 
+            // Continue the animation
             requestAnimationFrame(animateDuck);
         }
 
+        // Update cursorX whenever the mouse moves
         document.addEventListener('mousemove', function(e) {
             cursorX = e.clientX;
         });
 
+        // Start the duck animation
         animateDuck();
     </script>
 </body>
