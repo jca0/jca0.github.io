@@ -4,19 +4,80 @@
     <meta charset="UTF-8">
     <title>quack</title>
     <style>
-        /* CSS will be added here */
+        body {
+            cursor: url('bread.png'), auto;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        #duck {
+            position: absolute;
+            bottom: -20px; /* Adjust this value to align the duck properly */
+            left: 0;
+            font-size: 16px; /* Adjust font size as needed */
+            line-height: 1;
+            font-family: monospace;
+            white-space: pre;
+            user-select: none;
+        }
     </style>
 </head>
 <body>
-    <!-- ASCII Duck Element -->
-    <div id="duck"><(' )~</div>
-
-    <!-- Quack Sound -->
+    <div id="duck"></div>
     <audio id="quack-sound" src="quack.mp3" preload="auto"></audio>
 
-    <!-- JavaScript will be added here -->
     <script>
-        // JavaScript code will be added here
+        const duck = document.getElementById('duck');
+        const quackSound = document.getElementById('quack-sound');
+
+        const duckOpen = `
+    __
+  >(o )__
+   ( ._> /
+    \`---'`;
+
+        const duckClosed = `
+    __
+  -(o )__
+   ( ._> /
+    \`---'`;
+
+        let duckFrames = [duckOpen, duckClosed];
+        let currentFrame = 0;
+
+        let duckX = 0;
+        let cursorX = 0;
+        let isQuacking = false;
+
+        function animateDuck() {
+            currentFrame = (currentFrame + 1) % duckFrames.length;
+            duck.textContent = duckFrames[currentFrame];
+
+            let duckWidth = duck.offsetWidth;
+            let dx = cursorX - (duckX + duckWidth / 2);
+            let speed = 2;
+
+            if (Math.abs(dx) > speed) {
+                duckX += speed * Math.sign(dx);
+                isQuacking = false;
+            } else {
+                duckX += dx;
+                if (!isQuacking) {
+                    quackSound.play();
+                    isQuacking = true;
+                }
+            }
+
+            duck.style.left = duckX + 'px';
+
+            requestAnimationFrame(animateDuck);
+        }
+
+        document.addEventListener('mousemove', function(e) {
+            cursorX = e.clientX;
+        });
+
+        animateDuck();
     </script>
 </body>
 </html>
